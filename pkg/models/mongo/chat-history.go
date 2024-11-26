@@ -1,4 +1,4 @@
-package mongo
+package models
 
 import (
 	"time"
@@ -7,8 +7,8 @@ import (
 )
 
 type ChatHistory struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty"` // For unique identification of the chat
-	UserID    primitive.ObjectID `bson:"user_id"`       // Foreign key for the user
-	Messages  []Message          `bson:"messages"`      // Chat history
-	CreatedAt time.Time          `bson:"created_at"`    // Chat creation time
+	ID        primitive.ObjectID `bson:"_id,omitempty" json:"id"`     // Unique identification
+	UserID    primitive.ObjectID `bson:"user_id" json:"userId"`       // User foreign key
+	Messages  []Message          `bson:"messages" json:"messages"`    // Chat history messages
+	CreatedAt time.Time          `bson:"created_at" json:"createdAt"` // Creation time
 }

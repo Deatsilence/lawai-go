@@ -1,4 +1,4 @@
-package mongo
+package models
 
 import (
 	"time"
@@ -7,12 +7,12 @@ import (
 )
 
 type APILog struct {
-	ID               primitive.ObjectID     `bson:"_id,omitempty"`     // Log kaydı için ObjectID
-	ChatID           primitive.ObjectID     `bson:"chat_id"`           // Hangi chat'e ait olduğu
-	Request          map[string]interface{} `bson:"request"`           // Yapılan API isteği (JSON formatında)
-	Response         map[string]interface{} `bson:"response"`          // Alınan API yanıtı (JSON formatında)
-	PromptTokens     int                    `bson:"prompt_tokens"`     // Prompt için kullanılan token sayısı
-	CompletionTokens int                    `bson:"completion_tokens"` // Yanıt için kullanılan token sayısı
-	TotalTokens      int                    `bson:"total_tokens"`      // Toplam kullanılan token sayısı
-	CreatedAt        time.Time              `bson:"created_at"`        // Log kaydının zamanı
+	ID               primitive.ObjectID     `bson:"_id,omitempty" json:"id"`                   // Unique log ID
+	ChatID           primitive.ObjectID     `bson:"chat_id" json:"chatId"`                     // Chat foreign key
+	Request          map[string]interface{} `bson:"request" json:"request"`                    // API request in JSON format
+	Response         map[string]interface{} `bson:"response" json:"response"`                  // API response in JSON format
+	PromptTokens     int                    `bson:"prompt_tokens" json:"promptTokens"`         // Tokens used for prompt
+	CompletionTokens int                    `bson:"completion_tokens" json:"completionTokens"` // Tokens used for completion
+	TotalTokens      int                    `bson:"total_tokens" json:"totalTokens"`           // Total tokens used
+	CreatedAt        time.Time              `bson:"created_at" json:"createdAt"`               // Log creation time
 }
