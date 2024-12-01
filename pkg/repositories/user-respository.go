@@ -62,3 +62,11 @@ func (r *UserRepository) CountDocuments(ctx context.Context, filter bson.M, opts
 	}
 	return count, nil
 }
+
+func (r *UserRepository) GeneratePasswordReset(ctx context.Context, passwordReset models.PasswordReset) error {
+	_, err := r.collection.InsertOne(ctx, passwordReset)
+	if err != nil {
+		return err
+	}
+	return nil
+}

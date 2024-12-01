@@ -15,14 +15,15 @@ import (
 )
 
 type UserService struct {
-	repo *repositories.UserRepository
-	bl   *businesslogic.UserBL
+	repo     *repositories.UserRepository
+	userBL   *businesslogic.UserBL
+	commonBL *businesslogic.CommonBL
 }
 
 var validateUser = validator.New()
 
-func NewUserService(repo *repositories.UserRepository, bl *businesslogic.UserBL) *UserService {
-	return &UserService{repo: repo, bl: bl}
+func NewUserService(repo *repositories.UserRepository, userBL *businesslogic.UserBL, commonBL *businesslogic.CommonBL) *UserService {
+	return &UserService{repo: repo, userBL: userBL, commonBL: commonBL}
 }
 
 func (s *UserService) CreateUser(ctx context.Context, user models.User) (primitive.ObjectID, int, error) {
@@ -48,7 +49,7 @@ func (s *UserService) CreateUser(ctx context.Context, user models.User) (primiti
 		}
 	}
 
-	password, err := s.bl.HashPassword(*user.Password)
+	password, err := s.userBL.HashPassword(*user.Password)
 	if err != nil {
 		return primitive.NilObjectID, http.StatusInternalServerError, err
 	}
@@ -80,4 +81,23 @@ func (s *UserService) DeleteUnverified(ctx context.Context, email string) (bool,
 		}
 	}
 	return user.IsVerified, nil
+}
+
+func (s *UserService) SendResetEmail(ctx context.Context, email string) (int, error) {
+	ctx, cancel := context.WithTimeout(ctx, 100*time.Second)
+	defer cancel()
+
+	passwordReset := *s.commonBL.GenerateResetCode(ctx, email)
+	err := s.repo.GeneratePasswordReset(ctx, passwordReset)
+
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	err = s.commonBL.SendEmail(*passwordReset.Email, passwordReset.Code)
+
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+	return http.StatusOK, nil
 }

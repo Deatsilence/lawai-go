@@ -35,7 +35,8 @@ func main() {
 
 	// Service ve Controller'ı başlat
 	userBL := businesslogic.NewUserBL()
-	userService := services.NewUserService(userRepo, userBL)
+	commonBL := businesslogic.NewCommonBL()
+	userService := services.NewUserService(userRepo, userBL, commonBL)
 	userController := controllers.NewUserController(userService)
 
 	router := gin.New()
